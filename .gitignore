@@ -105,3 +105,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+/ip.txt
+/MAE.txt
+/up.txt

@@ -62,17 +62,17 @@ def rank(u,i,ElismDict,N = 20):
                 Necf[io] = ElismDict[i][io]
 
     if len(Necf) == 0:
-        return -2
-    else:
-        Necf = sorted(Necf.items(), key=lambda item: item[1], reverse=True)
-        if len(Necf) > N:
-            Necf = Necf[:N]
+        return -1
+    # else:
+    #     Necf = sorted(Necf.items(), key=lambda item: item[1], reverse=True)
+    #     if len(Necf) > N:
+    #         Necf = Necf[:N]
 
     sum1 = 0
     sum2 = 0
 
     canPre = False
-    for n in Necf:
+    for n in Necf.items():
         if R[n[0]].get(u,-1) != -1:
             canPre = True
             itemid = n[0]
@@ -81,7 +81,7 @@ def rank(u,i,ElismDict,N = 20):
             sum2 += n[1]
 
     if not canPre:
-        return -2
+        return -1
     return sum1/sum2+average(i)
 
 def train(load = True):

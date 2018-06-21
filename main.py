@@ -5,17 +5,17 @@ import user
 def rank(userID,itemID,ElismUserDict,ITrustDict,ElismItemDict,N1=20,N2=20):
     rankByuser = user.rank(userID,itemID,ElismUserDict,ITrustDict,N1)
     rankByitem = item.rank(userID,itemID,ElismItemDict,N2)
-    if rankByuser == -1 and rankByitem == -2:
-        return -1   #对user无法预测
-    elif rankByitem != -2 and rankByitem != -1 and (rankByuser == -1 or rankByuser == -2):
+    if rankByuser == -1 and rankByitem == -1:
+        return -1   #无法预测
+    elif rankByitem != -1 and rankByuser == -1:
         return rankByitem
-    elif rankByuser != -2 and rankByuser != -1 and (rankByitem == -1 or rankByitem == -2):
+    elif rankByuser != -1 and rankByitem == -1:
         return rankByuser
-    elif rankByuser != -2 and rankByuser != -1 and rankByitem != -1 and rankByitem != -2:
+    elif rankByuser != -1 and rankByitem != -1:
         return (rankByuser+rankByitem)/2
     else:
         # return (user.average(userID)+item.average(itemID))/2
-        return -2
+        return -1
 
 
 def test(file, ElismUserDict, ITrustDict, ElismItemDict, N1, N2):
@@ -23,7 +23,7 @@ def test(file, ElismUserDict, ITrustDict, ElismItemDict, N1, N2):
     n = 0
     count = 0
     user = set()
-    notPreUser = set()
+    PreUser = set()
     with open(file,"r") as f:
         for line in f.readlines()[1:]:          #跳过首行标题行
             n+=1
@@ -34,14 +34,11 @@ def test(file, ElismUserDict, ITrustDict, ElismItemDict, N1, N2):
             itemID = int(ss[1])
             real_rating = int(ss[2])
             pre_rating = rank(userID,itemID,ElismUserDict,ITrustDict,ElismItemDict,N1,N2)
-            if pre_rating == -1:
-                notPreUser.add(userID)
-                count+=1
-            elif pre_rating == -2:
-                count+=1
-            else:
+            if pre_rating != -1:
+                count += 1
+                PreUser.add(userID)
                 sum += abs(real_rating-pre_rating)
-    print(sum/n," ",(len(user)-len(notPreUser))/len(user)," ",(n-count)/n)
+    return sum/n,len(PreUser)/len(user),count/n
 
 def train(load):
     '''
@@ -55,5 +52,12 @@ def train(load):
 if __name__ == '__main__':
     ElismUserDict,ITrustDict,ElismItemDict = train(True)
     print("训练完毕")
+    mae = {}
+    up = {}
+    ip = {}
     for i in range(5):
-        test("testData{}.txt".format(i + 1), ElismUserDict, ITrustDict, ElismItemDict, 10, 35)
+        MAE, UP, IP = test("testData{}.txt".format(i + 1), ElismUserDict, ITrustDict, ElismItemDict, 70, 70)
+        print(MAE,UP, IP)
+        mae.setdefault(i, []).append(MAE)
+        up.setdefault(i, []).append(UP)
+        ip.setdefault(i, []).append(IP)

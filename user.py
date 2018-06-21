@@ -231,20 +231,20 @@ def rank(u,i,ElismDict,ITrustDict,N=20):
 
     if len(Necf)+len(Ntrust) == 0:
         return -1           #-1代表没有足够信息对该用户预测
-    else:
-        Necf = sorted(Necf.items(), key=lambda item: item[1], reverse=True)
-        Ntrust = sorted(Ntrust.items(), key=lambda item: item[1], reverse=True)
-        if len(Necf) > N:
-            Necf = Necf[:N]
-        if len(Ntrust) > N:
-            Ntrust = Ntrust[:N]
+    # else:
+    #     Necf = sorted(Necf.items(), key=lambda item: item[1], reverse=True)
+    #     Ntrust = sorted(Ntrust.items(), key=lambda item: item[1], reverse=True)
+    #     if len(Necf) > N:
+    #         Necf = Necf[:N]
+    #     if len(Ntrust) > N:
+    #         Ntrust = Ntrust[:N]
 
     sum1 = 0
     sum2 = 0
     sum3 = 0
 
     canItemPre = False
-    for n in Necf:
+    for n in Necf.items():
         if R[n[0]].get(i,-1) != -1:
             canItemPre = True
             uid = n[0]
@@ -252,7 +252,7 @@ def rank(u,i,ElismDict,ITrustDict,N=20):
             sum1 += n[1]*(R[uid][i]-ave)
             sum3 += n[1]
 
-    for n in Ntrust:
+    for n in Ntrust.items():
         if R[n[0]].get(i,-1) != -1:
             canItemPre = True
             uid = n[0]
@@ -261,7 +261,7 @@ def rank(u,i,ElismDict,ITrustDict,N=20):
             sum3 += n[1]
 
     if not canItemPre:
-        return -2 #代表无法对该item进行预测
+        return -1 #代表无法对该item进行预测
 
     return (sum1+sum2)/sum3+average(u)
 
